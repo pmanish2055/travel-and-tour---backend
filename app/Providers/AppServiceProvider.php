@@ -45,19 +45,12 @@ class AppServiceProvider extends ServiceProvider
             @symlink($target, $publicStorage);
         }
         // Fallback: if file driver but dir not writable (shared host permission issue), switch to database (MySQL) to prevent login 403
+        // MySQL only - no sqlite fallback (as requested)
         if (config('session.driver') === 'file' && !is_writable(storage_path('framework/sessions'))) {
             config(['session.driver' => 'database']);
         }
         if (config('cache.default') === 'file' && !is_writable(storage_path('framework/cache/data'))) {
             config(['cache.default' => 'database']);
-        }
-        // Ensure database.sqlite exists if DB_CONNECTION is sqlite and file missing (prevents 500 on cache:clear)
-        if (config('database.default') === 'sqlite') {
-            $dbPath = database_path('database.sqlite');
-            if (!file_exists($dbPath)) {
-                @touch($dbPath);
-                @chmod($dbPath, 0664);
-            }
         }
 
         // FIX 403: Super admin + authenticated bypass - grant all abilities to super_admin AND any active authenticated user
