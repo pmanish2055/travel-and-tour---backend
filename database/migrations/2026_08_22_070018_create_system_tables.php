@@ -54,7 +54,7 @@ return new class extends Migration
                 $table->string('avatar')->nullable()->after('phone')->comment('Avatar path');
             }
             if (!Schema::hasColumn('users', 'role')) {
-                $table->enum('role', ['super_admin','admin','editor','agent'])->default('agent')->after('avatar')->comment('Role for Shield - super_admin has all access');
+                $table->enum('role', ['super_admin','admin','editor','agent','customer'])->default('agent')->after('avatar')->comment('Role for Shield - super_admin has all access');
             }
             if (!Schema::hasColumn('users', 'is_active')) {
                 $table->boolean('is_active')->default(true)->after('role')->comment('Active flag');

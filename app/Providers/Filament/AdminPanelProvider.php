@@ -41,6 +41,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->passwordReset()
+            ->profile(\App\Filament\Pages\Auth\EditProfile::class, isSimple: false)
             ->brandName(fn () => Setting::get('company.name', config('app.name', 'Tour Admin')))
             ->brandLogo(fn () => Setting::get('company.logo') ? asset('storage/' . Setting::get('company.logo')) : null)
             ->favicon(fn () => Setting::get('company.favicon') ? asset('storage/' . Setting::get('company.favicon')) : asset('favicon.ico'))
@@ -71,6 +73,13 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            // Ensure profile is accessible to any authenticated user (user icon -> My Profile)
+            ->userMenuItems([
+                'profile' => \Filament\Navigation\MenuItem::make()
+                    ->label('My Profile')
+                    ->icon('heroicon-o-user-circle')
+                    ->url(fn (): string => \App\Filament\Pages\Auth\EditProfile::getUrl()),
             ]);
     }
 }
