@@ -145,23 +145,12 @@ class User extends Authenticatable
     /**
      * Determine if user can access Filament panel - blocks inactive users.
      * Filament calls this via AdminPanelProvider if defined.
+     * Production fix: "ke garda ne 403 na aune" - any active user can access panel, Gate::before handles resource perms
      */
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
-        // Inactive users cannot login to panel (prevents 403 confusion - shows login error instead)
-        if (!$this->is_active) {
-            return false;
-        }
-        // Allow all active users with any role that has panel_user or super_admin
-        // Super admin always allowed
-        if ($this->isSuperAdmin()) {
-            return true;
-        }
-        // If using Shield, panel_user role is created for basic access
-        if (method_exists($this, 'hasRole') && $this->hasRole(['super_admin', 'admin', 'editor', 'agent', 'panel_user'])) {
-            return true;
-        }
-        // Fallback: allow if role column is one of panel roles (covers fresh seed before spatie sync)
-        return in_array($this->role, ['super_admin', 'admin', 'editor', 'agent', 'customer']);
+        // Only block inactive users - all active users can at least see dashboard (prevents login 403)
+        // This ensures login pachi dashboard 403 kahile aundaina
+        return (bool) $this->is_active;
     }
 }
