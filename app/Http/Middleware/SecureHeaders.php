@@ -24,8 +24,10 @@ class SecureHeaders
         $response->headers->set('X-Permitted-Cross-Domain-Policies', 'none', false);
 
         // Basic CSP for Filament admin only (API routes return JSON, no CSP needed)
+        // Allow Cloudflare Insights beacon (auto-injected when Cloudflare proxy / Web Analytics on)
+        // Without this, browser console shows: "Refused to load script https://static.cloudflareinsights.com/..."
         if (! $request->is('api/*')) {
-            $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self'", false);
+            $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://cloudflareinsights.com https://static.cloudflareinsights.com; frame-src 'self' https://challenges.cloudflare.com", false);
         }
 
         return $response;
