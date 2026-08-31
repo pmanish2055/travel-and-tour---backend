@@ -31,6 +31,23 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json(['success'=>false,'message'=>'Resource not found'], 404);
             }
         });
+        // My20i 403 fix: log admin 403 with user/ability for debugging, never cache it
+        $exceptions->render(function (\Illuminate\Auth\Access\AuthorizationException $e, $request) {
+            if ($request->is('admin*')) {
+                \Illuminate\Support\Facades\Log::warning('Admin 403', [
+                    'user' => auth()->id(),
+                    'email' => auth()->user()?->email,
+                    'path' => $request->path(),
+                    'ability' => $e->getMessage(),
+                    'ip' => $request->ip(),
+                ]);
+                // In production, for active users, Gate::before already allows, but if still 403, show friendly page
+                if (app()->isProduction() && auth()->check() && auth()->user()->is_active) {
+                    // Don't hide, but ensure it's not cached by CDN
+                    // Let the 403 response pass with no-cache headers (handled in SecureHeaders)
+                }
+            }
+        });
         $exceptions->render(function (\Throwable $e, $request) {
             if ($request->is('api/*') && app()->isProduction()) {
                 \Illuminate\Support\Facades\Log::error('API exception', ['message'=>$e->getMessage(), 'trace'=>$e->getTraceAsString()]);

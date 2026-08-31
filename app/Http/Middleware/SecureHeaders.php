@@ -30,6 +30,15 @@ class SecureHeaders
             $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://cloudflareinsights.com https://static.cloudflareinsights.com; frame-src 'self' https://challenges.cloudflare.com", false);
         }
 
+        // My20i StackCDN/Cloudflare cache fix: never cache admin/dashboard, prevent stale 403
+        if ($request->is('admin*')) {
+            $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0', false);
+            $response->headers->set('Pragma', 'no-cache', false);
+            $response->headers->set('Expires', '0', false);
+            $response->headers->set('CDN-Cache-Control', 'no-store', false);
+            $response->headers->set('Cloudflare-CDN-Cache-Control', 'no-store', false);
+        }
+
         return $response;
     }
 }

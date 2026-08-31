@@ -43,6 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->passwordReset()
             ->profile(\App\Filament\Pages\Auth\EditProfile::class, isSimple: false)
+            ->authGuard('web')
             ->brandName(fn () => Setting::get('company.name', config('app.name', 'Tour Admin')))
             ->brandLogo(fn () => Setting::get('company.logo') ? asset('storage/' . Setting::get('company.logo')) : null)
             ->favicon(fn () => Setting::get('company.favicon') ? asset('storage/' . Setting::get('company.favicon')) : asset('favicon.ico'))
