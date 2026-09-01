@@ -34,7 +34,7 @@ class EditProfile extends BaseEditProfile
                             ->label('Avatar')
                             ->image()
                             ->avatar()
-                            ->directory('avatars')
+                            ->directory('avatars')->disk('public')->visibility('public')
                             ->maxSize(5120)
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->imagePreviewHeight('150')

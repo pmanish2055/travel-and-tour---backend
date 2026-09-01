@@ -47,7 +47,7 @@ class PartnerForm
                                         FileUpload::make('logo')
                                             ->label('Logo')
                                             ->image()
-                                            ->directory('partners')
+                                            ->directory('partners')->disk('public')->visibility('public')
                                             ->helperText('200x100 PNG/SVG')
                                             ->required()
                                             ->columnSpanFull()

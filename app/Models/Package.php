@@ -29,12 +29,13 @@ class Package extends Model implements HasMedia
         'duration_days', 'duration_nights', 'group_size_min', 'group_size_max', 'max_altitude_m', 'difficulty', 'best_season', 'accommodation', 'meal_plan', 'transportation', 'trip_type', // Trip specifics
         'price', 'discount_price', 'price_type', 'currency', 'is_price_on_request', // Pricing
         'featured', 'is_trending', 'is_popular', 'status', 'published_at', // Visibility
-        'featured_image', 'seo_title', 'seo_description', 'seo_keywords', 'view_count', 'sort_order'
+        'featured_image', 'gallery', 'video_url', 'map_embed', 'seo_title', 'seo_description', 'seo_keywords', 'view_count', 'sort_order'
     ];
 
     protected $casts = [
         'highlights' => 'array', // JSON -> array
         'best_season' => 'array',
+        'gallery' => 'array',
         'price' => 'decimal:2',
         'discount_price' => 'decimal:2',
         'featured' => 'boolean',

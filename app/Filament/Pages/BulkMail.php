@@ -51,6 +51,7 @@ class BulkMail extends Page implements HasForms
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->statePath('data')
             ->components([
                 Section::make('Recipients')
                     ->description('Select registered customers')
@@ -142,7 +143,12 @@ class BulkMail extends Page implements HasForms
 
     public function sendMail(): void
     {
-        $data = $this->form->getState();
+        $raw = $this->form->getState();
+        $data = $raw;
+        if (isset($raw['data']) && is_array($raw['data']) && !array_key_exists('subject', $raw)) {
+            $data = $raw['data'];
+        }
+        \Illuminate\Support\Facades\Log::info('BulkMail send raw', ['raw'=>$raw,'resolved'=>$data]);
         $emails = collect();
         $type = $data['recipient_type'] ?? 'all';
 

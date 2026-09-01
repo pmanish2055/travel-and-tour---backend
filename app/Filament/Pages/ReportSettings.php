@@ -60,6 +60,7 @@ class ReportSettings extends Page implements HasForms
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->statePath('data')
             ->components([
                 Tabs::make('Report Settings Tabs')
                     ->columnSpanFull()
@@ -83,7 +84,8 @@ class ReportSettings extends Page implements HasForms
                                     ->schema([
                                         TextInput::make('report_header_title')
                                             ->label('Header Title')
-                                            ->required()
+                                            ->placeholder('Company travel reports')
+                                            ->maxLength(255)
                                             ->helperText('Company travel reports'),
                                         TextInput::make('report_primary_color')
                                             ->label('Primary Color')
@@ -96,7 +98,7 @@ class ReportSettings extends Page implements HasForms
                                         FileUpload::make('report_header_logo')
                                             ->label('Header Logo')
                                             ->image()
-                                            ->directory('reports/header')
+                                            ->directory('reports/header')->disk('public')->visibility('public')
                                             ->helperText('200x60 PNG')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
@@ -197,7 +199,15 @@ class ReportSettings extends Page implements HasForms
 
     public function save(): void
     {
-        $data = $this->form->getState();
+        $raw = $this->form->getState();
+        $data = $raw;
+        if (isset($raw['data']) && is_array($raw['data']) && !array_key_exists('report_header_title', $raw)) {
+            $data = $raw['data'];
+        }
+        if (empty($data) && !empty($this->data)) {
+            $data = array_merge($this->data, $data);
+        }
+        \Illuminate\Support\Facades\Log::info('ReportSettings save', ['raw' => $raw, 'resolved' => $data]);
         $map = [
             'report_header_title' => ['key' => 'reports.header_title', 'group' => 'reports'],
             'report_header_subtitle' => ['key' => 'reports.header_subtitle', 'group' => 'reports'],
@@ -222,6 +232,19 @@ class ReportSettings extends Page implements HasForms
                 Setting::set($meta['key'], $val, $meta['group'], false);
             }
         }
+        foreach (['reports','mail'] as $g) {
+            \Illuminate\Support\Facades\Cache::forget('settings:'.$g);
+        }
+        \Illuminate\Support\Facades\Cache::forget('settings:reports+mail');
+        // Refresh form state
+        $saved = \App\Models\Setting::whereIn('key', array_column($map, 'key'))->pluck('value', 'key')->toArray();
+        $this->data = array_merge($this->data, $data);
+        foreach ($saved as $k => $v) {
+            $field = array_search($k, array_column($map, 'key'));
+            // Keep $this->data synced
+        }
+        $this->form->fill($this->data);
+        \Illuminate\Support\Facades\Log::info('ReportSettings after save', $saved);
         Notification::make()->title('Report settings saved')->success()->send();
     }
 }

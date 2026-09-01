@@ -35,10 +35,14 @@ class Destination extends Model
         'seo_title', // SEO
         'seo_description',
         'sort_order',
+        'video_url',
+        'gallery',
+        'map_embed',
     ];
 
     protected $casts = [
         'best_season' => 'array', // Auto decode JSON to array
+        'gallery' => 'array',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'latitude' => 'decimal:7',

@@ -21,10 +21,10 @@ class BlogPost extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, InteractsWithMedia;
     protected $fillable = [
-        'title','slug','blog_category_id','user_id','excerpt','content','featured_image',
+        'title','slug','blog_category_id','user_id','excerpt','content','featured_image','gallery','video_url',
         'is_featured','status','published_at','view_count','seo_title','seo_description'
     ];
-    protected $casts = ['is_featured'=>'boolean','published_at'=>'datetime','view_count'=>'integer'];
+    protected $casts = ['is_featured'=>'boolean','published_at'=>'datetime','view_count'=>'integer','gallery'=>'array'];
     protected static function booted(): void {
         static::creating(function($p){
             if(empty($p->slug)) $p->slug = Str::slug($p->title);

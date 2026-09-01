@@ -103,6 +103,7 @@ class ManageCompanySettings extends Page implements HasForms
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->statePath('data')
             ->components([
                 Tabs::make('Company Settings Tabs')
                     ->columnSpanFull()
@@ -222,7 +223,7 @@ class ManageCompanySettings extends Page implements HasForms
                                         FileUpload::make('company_logo')
                                             ->label('Company Logo')
                                             ->image()
-                                            ->directory('company')
+                                            ->directory('company')->disk('public')->visibility('public')
                                             ->helperText('200x60 PNG, header')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
@@ -231,7 +232,7 @@ class ManageCompanySettings extends Page implements HasForms
                                         FileUpload::make('company_favicon')
                                             ->label('Favicon')
                                             ->image()
-                                            ->directory('company')
+                                            ->directory('company')->disk('public')->visibility('public')
                                             ->helperText('16x16 or 32x32')
                                             ->maxSize(5120)
                                             ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
@@ -239,7 +240,7 @@ class ManageCompanySettings extends Page implements HasForms
                                         FileUpload::make('company_cover')
                                             ->label('Cover Image')
                                             ->image()
-                                            ->directory('company')
+                                            ->directory('company')->disk('public')->visibility('public')
                                             ->helperText('About hero image')
                                             ->maxSize(5120)
                                             ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
@@ -471,7 +472,21 @@ class ManageCompanySettings extends Page implements HasForms
 
     public function save(): void
     {
-        $data = $this->form->getState();
+        // Robust: handle both flat and nested state (Filament statePath)
+        $raw = $this->form->getState();
+        $data = $raw;
+        // If statePath='data' was not unwrapped, raw may be ['data'=>[...]]
+        if (isset($raw['data']) && is_array($raw['data']) && !array_key_exists('company_name', $raw)) {
+            $data = $raw['data'];
+        }
+        // Fallback to $this->data if form state empty (Livewire sync issue)
+        if (empty($data) || !array_key_exists('company_name', $data)) {
+            // Try $this->data directly (Livewire property)
+            if (!empty($this->data) && array_key_exists('company_name', $this->data)) {
+                $data = array_merge($this->data, $data);
+            }
+        }
+        \Illuminate\Support\Facades\Log::info('CompanySettings save raw', ['raw' => $raw, 'resolved' => $data, 'user' => auth()->id()]);
         $map = [
             'company_name' => ['key' => 'company.name', 'encrypted' => false, 'group' => 'company'],
             'company_tagline' => ['key' => 'company.tagline', 'encrypted' => false, 'group' => 'company'],
@@ -539,10 +554,65 @@ class ManageCompanySettings extends Page implements HasForms
         \Illuminate\Support\Facades\Cache::forget('navigation');
         \Illuminate\Support\Facades\Cache::forget('homepage:aggregate');
         \Illuminate\Support\Facades\Cache::forget('site:stats');
+        \Illuminate\Support\Facades\Cache::forget('settings:tokens');
+        try { \Illuminate\Support\Facades\Artisan::call('view:clear'); } catch (\Throwable $e) {}
+        try { \Illuminate\Support\Facades\Artisan::call('config:clear'); } catch (\Throwable $e) {}
+
+        // Verify persistence and refresh form state so reload shows same data
+        $saved = \App\Models\Setting::whereIn('key', array_column($map, 'key'))->pluck('value', 'key')->toArray();
+        \Illuminate\Support\Facades\Log::info('CompanySettings after save DB', $saved);
+
+        // Refresh $this->data from DB and refill form to keep UI in sync
+        $this->data = [
+            'company_name' => $saved['company.name'] ?? $data['company_name'] ?? '',
+            'company_tagline' => $saved['company.tagline'] ?? $data['company_tagline'] ?? '',
+            'company_description' => $saved['company.description'] ?? $data['company_description'] ?? '',
+            'company_email' => $saved['company.email'] ?? $data['company_email'] ?? '',
+            'company_phone' => $saved['company.phone'] ?? $data['company_phone'] ?? '',
+            'company_whatsapp' => $saved['company.whatsapp'] ?? $data['company_whatsapp'] ?? '',
+            'company_address' => $saved['company.address'] ?? $data['company_address'] ?? '',
+            'company_city' => $saved['company.city'] ?? $data['company_city'] ?? '',
+            'company_province' => $saved['company.province'] ?? $data['company_province'] ?? '',
+            'company_map_embed' => $saved['company.map_embed'] ?? $data['company_map_embed'] ?? '',
+            'company_business_hours' => $saved['company.business_hours'] ?? $data['company_business_hours'] ?? '',
+            'company_logo' => $saved['company.logo'] ?? $data['company_logo'] ?? '',
+            'company_favicon' => $saved['company.favicon'] ?? $data['company_favicon'] ?? '',
+            'company_cover' => $saved['company.cover'] ?? $data['company_cover'] ?? '',
+            'company_primary_color' => $saved['company.primary_color'] ?? $data['company_primary_color'] ?? '',
+            'company_pan' => $saved['company.pan'] ?? $data['company_pan'] ?? '',
+            'company_reg_no' => $saved['company.reg_no'] ?? $data['company_reg_no'] ?? '',
+            'company_taan_license' => $saved['company.taan_license'] ?? $data['company_taan_license'] ?? '',
+            'company_ntb_license' => $saved['company.ntb_license'] ?? $data['company_ntb_license'] ?? '',
+            'company_facebook' => $saved['company.facebook'] ?? $data['company_facebook'] ?? '',
+            'company_instagram' => $saved['company.instagram'] ?? $data['company_instagram'] ?? '',
+            'company_youtube' => $saved['company.youtube'] ?? $data['company_youtube'] ?? '',
+            'company_linkedin' => $saved['company.linkedin'] ?? $data['company_linkedin'] ?? '',
+            'company_tiktok' => $saved['company.tiktok'] ?? $data['company_tiktok'] ?? '',
+            'seo_site_title' => $saved['seo.site_title'] ?? $data['seo_site_title'] ?? '',
+            'seo_meta_description' => $saved['seo.meta_description'] ?? $data['seo_meta_description'] ?? '',
+            'seo_keywords' => $saved['seo.keywords'] ?? $data['seo_keywords'] ?? '',
+            'tokens_google_map_api_key' => $saved['tokens.google_map_api_key'] ?? $data['tokens_google_map_api_key'] ?? '',
+            'tokens_google_analytics_id' => $saved['tokens.google_analytics_id'] ?? $data['tokens_google_analytics_id'] ?? '',
+            'tokens_facebook_pixel_id' => $saved['tokens.facebook_pixel_id'] ?? $data['tokens_facebook_pixel_id'] ?? '',
+            'tokens_smtp_host' => $saved['tokens.smtp_host'] ?? $data['tokens_smtp_host'] ?? '',
+            'tokens_smtp_port' => $saved['tokens.smtp_port'] ?? $data['tokens_smtp_port'] ?? '',
+            'tokens_smtp_user' => $saved['tokens.smtp_user'] ?? $data['tokens_smtp_user'] ?? '',
+            'tokens_smtp_pass' => $saved['tokens.smtp_pass'] ?? $data['tokens_smtp_pass'] ?? '',
+            'tokens_esewa_merchant_code' => $saved['tokens.esewa_merchant_code'] ?? $data['tokens_esewa_merchant_code'] ?? '',
+            'tokens_esewa_secret' => $saved['tokens.esewa_secret'] ?? $data['tokens_esewa_secret'] ?? '',
+            'tokens_khalti_public_key' => $saved['tokens.khalti_public_key'] ?? $data['tokens_khalti_public_key'] ?? '',
+            'tokens_khalti_secret' => $saved['tokens.khalti_secret'] ?? $data['tokens_khalti_secret'] ?? '',
+            'tokens_stripe_publishable' => $saved['tokens.stripe_publishable'] ?? $data['tokens_stripe_publishable'] ?? '',
+            'tokens_stripe_secret' => $saved['tokens.stripe_secret'] ?? $data['tokens_stripe_secret'] ?? '',
+            'tokens_recaptcha_site_key' => $saved['tokens.recaptcha_site_key'] ?? $data['tokens_recaptcha_site_key'] ?? '',
+            'tokens_recaptcha_secret' => $saved['tokens.recaptcha_secret'] ?? $data['tokens_recaptcha_secret'] ?? '',
+            'tokens_whatsapp_token' => $saved['tokens.whatsapp_token'] ?? $data['tokens_whatsapp_token'] ?? '',
+        ];
+        $this->form->fill($this->data);
 
         Notification::make()
             ->title('Company settings saved')
-            ->body('Settings saved successfully.')
+            ->body('Settings saved successfully. Sidebar will now show: ' . ($this->data['company_name'] ?? ''))
             ->success()
             ->send();
     }

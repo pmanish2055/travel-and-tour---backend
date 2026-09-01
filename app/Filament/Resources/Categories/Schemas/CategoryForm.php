@@ -84,7 +84,7 @@ class CategoryForm
                                         FileUpload::make('featured_image')
                                             ->label('Featured Image')
                                             ->image()
-                                            ->directory('categories')
+                                            ->directory('categories')->disk('public')->visibility('public')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
                                             ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])

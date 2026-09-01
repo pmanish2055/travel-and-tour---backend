@@ -47,7 +47,7 @@ class SliderForm
                                         FileUpload::make('image')
                                             ->image()
                                             ->required()
-                                            ->directory('sliders')
+                                            ->directory('sliders')->disk('public')->visibility('public')
                                             ->helperText('1920x800 recommended')
                                             ->columnSpanFull()
                                             ->maxSize(5120)

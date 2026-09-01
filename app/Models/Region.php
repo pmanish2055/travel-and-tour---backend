@@ -33,6 +33,7 @@ class Region extends Model
         'slug', // URL slug
         'description', // Description
         'featured_image', // Image path
+        'gallery', // Gallery JSON
         'is_featured', // Featured flag
         'is_active', // Active flag
         'sort_order', // Sort order
@@ -45,6 +46,7 @@ class Region extends Model
      * @var array
      */
     protected $casts = [
+        'gallery' => 'array',
         'is_featured' => 'boolean',
         'is_active' => 'boolean',
         'sort_order' => 'integer',

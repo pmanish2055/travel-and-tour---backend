@@ -57,7 +57,7 @@ class UserForm
                                         FileUpload::make('avatar')
                                             ->image()
                                             ->avatar()
-                                            ->directory('avatars')
+                                            ->directory('avatars')->disk('public')->visibility('public')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
                                             ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])

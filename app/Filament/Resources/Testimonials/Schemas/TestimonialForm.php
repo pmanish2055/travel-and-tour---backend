@@ -60,7 +60,7 @@ class TestimonialForm
                                         FileUpload::make('avatar')
                                             ->label('Avatar')
                                             ->image()
-                                            ->directory('testimonials')
+                                            ->directory('testimonials')->disk('public')->visibility('public')
                                             ->avatar()
                                             ->helperText('200x200 avatar')
                                             ->columnSpanFull()

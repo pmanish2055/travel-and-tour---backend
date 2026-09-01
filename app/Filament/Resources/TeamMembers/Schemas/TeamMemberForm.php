@@ -47,7 +47,7 @@ class TeamMemberForm
                                         FileUpload::make('photo')
                                             ->label('Photo')
                                             ->image()
-                                            ->directory('team')
+                                            ->directory('team')->disk('public')->visibility('public')
                                             ->helperText('400x400 JPG')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
