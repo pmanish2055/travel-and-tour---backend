@@ -590,8 +590,8 @@ class PackageForm
                                             ->helperText('1200x800 recommended')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                     ]),
                                 Section::make('Gallery Images')
                                     ->description('Detail slider images')
@@ -605,8 +605,8 @@ class PackageForm
                                             ->helperText('Upload 5-10 images')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250')
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable()
                                             ->maxFiles(10),
                                     ]),
                             ]),

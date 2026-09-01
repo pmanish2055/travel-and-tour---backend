@@ -51,8 +51,8 @@ class SliderForm
                                             ->helperText('1920x800 recommended')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                         TextInput::make('cta_text')
                                             ->label('CTA Text')
                                             ->placeholder('Book Now')

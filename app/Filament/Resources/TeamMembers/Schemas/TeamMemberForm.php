@@ -51,8 +51,8 @@ class TeamMemberForm
                                             ->helperText('400x400 JPG')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                         Textarea::make('bio')
                                             ->rows(3)
                                             ->helperText('Short bio')

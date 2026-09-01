@@ -108,8 +108,8 @@ class DestinationForm
                                             ->directory('destinations')->disk('public')->visibility('public')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                         TextInput::make('video_url')
                                             ->label('Video URL')
                                             ->url()
@@ -124,8 +124,8 @@ class DestinationForm
                                             ->helperText('Multiple images')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250')
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable()
                                             ->maxFiles(10),
                                         Textarea::make('map_embed')
                                             ->label('Map Embed')

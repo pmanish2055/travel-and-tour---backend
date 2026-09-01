@@ -122,8 +122,8 @@ class BlogPostForm
                                             ->helperText('1200x630 recommended')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                     ]),
                                 Section::make('Gallery')
                                     ->description('Additional images')
@@ -137,8 +137,8 @@ class BlogPostForm
                                             ->helperText('Multiple images')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250')
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable()
                                             ->maxFiles(10),
                                     ]),
                                 Section::make('Video')

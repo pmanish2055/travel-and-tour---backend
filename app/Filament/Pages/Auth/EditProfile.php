@@ -36,7 +36,7 @@ class EditProfile extends BaseEditProfile
                             ->avatar()
                             ->directory('avatars')->disk('public')->visibility('public')
                             ->maxSize(5120)
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
                             ->imagePreviewHeight('150')
                             ->columnSpanFull()
                             ->helperText('Upload your profile picture (max 5MB, square recommended)'),

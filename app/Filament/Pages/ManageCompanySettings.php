@@ -227,24 +227,24 @@ class ManageCompanySettings extends Page implements HasForms
                                             ->helperText('200x60 PNG, header')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                         FileUpload::make('company_favicon')
                                             ->label('Favicon')
                                             ->image()
                                             ->directory('company')->disk('public')->visibility('public')
                                             ->helperText('16x16 or 32x32')
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                         FileUpload::make('company_cover')
                                             ->label('Cover Image')
                                             ->image()
                                             ->directory('company')->disk('public')->visibility('public')
                                             ->helperText('About hero image')
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                         TextInput::make('company_primary_color')
                                             ->label('Primary Color')
                                             ->placeholder('#f59e0b')

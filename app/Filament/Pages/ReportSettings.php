@@ -102,8 +102,8 @@ class ReportSettings extends Page implements HasForms
                                             ->helperText('200x60 PNG')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                     ]),
                                 Section::make('Report Footer')
                                     ->description('Footer on every PDF')

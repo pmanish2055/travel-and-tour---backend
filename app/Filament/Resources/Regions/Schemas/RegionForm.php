@@ -87,8 +87,8 @@ class RegionForm
                                             ->helperText('Card image')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                         FileUpload::make('gallery')
                                             ->label('Gallery')
                                             ->multiple()
@@ -97,8 +97,8 @@ class RegionForm
                                             ->helperText('Gallery images')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250')
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable()
                                             ->maxFiles(10),
                                     ]),
                             ]),

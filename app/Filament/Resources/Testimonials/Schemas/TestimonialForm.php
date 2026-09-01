@@ -65,8 +65,8 @@ class TestimonialForm
                                             ->helperText('200x200 avatar')
                                             ->columnSpanFull()
                                             ->maxSize(5120)
-                                            ->acceptedFileTypes(['image/jpeg','image/png','image/webp'])
-                                            ->imagePreviewHeight('250'),
+                                            ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
+                                            ->imagePreviewHeight('250')->openable()->downloadable(),
                                         Textarea::make('comment')
                                             ->required()
                                             ->rows(4)
