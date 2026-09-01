@@ -15,11 +15,9 @@ use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Support\Icons\Heroicon;
 
 class ManageCompanySettings extends Page implements HasForms
@@ -53,7 +51,6 @@ class ManageCompanySettings extends Page implements HasForms
 
     public function mount(): void
     {
-        $settings = Setting::all()->pluck('value', 'key')->toArray();
         $this->data = [
             'company_name' => Setting::get('company.name', config('app.name', 'Travel Company')),
             'company_tagline' => Setting::get('company.tagline', 'Discover Your Next Journey'),
@@ -99,16 +96,6 @@ class ManageCompanySettings extends Page implements HasForms
             'tokens_recaptcha_secret' => Setting::get('tokens.recaptcha_secret', ''),
             'tokens_whatsapp_token' => Setting::get('tokens.whatsapp_token', ''),
         ];
-
-        $known = ['company.name','company.tagline','company.description','company.business_hours','company.email','company.phone','company.whatsapp','company.address','company.city','company.province','company.map_embed','company.logo','company.favicon','company.cover','company.primary_color','company.pan','company.reg_no','company.taan_license','company.ntb_license','company.facebook','company.instagram','company.youtube','company.linkedin','company.tiktok','seo.site_title','seo.meta_description','seo.keywords','tokens.google_map_api_key','tokens.google_analytics_id','tokens.facebook_pixel_id','tokens.smtp_host','tokens.smtp_port','tokens.smtp_user','tokens.smtp_pass','tokens.esewa_merchant_code','tokens.esewa_secret','tokens.khalti_public_key','tokens.khalti_secret','tokens.stripe_publishable','tokens.stripe_secret','tokens.recaptcha_site_key','tokens.recaptcha_secret','tokens.whatsapp_token'];
-        $custom = Setting::whereNotIn('key', $known)->get()->map(fn($s) => [
-            'key' => $s->key,
-            'value' => $s->value,
-            'group' => $s->group,
-            'is_encrypted' => (bool) $s->is_encrypted,
-            'description' => $s->description,
-        ])->toArray();
-        $this->data['custom_settings'] = $custom;
 
         $this->form->fill($this->data);
     }
@@ -458,63 +445,6 @@ class ManageCompanySettings extends Page implements HasForms
                                     ]),
                             ]),
 
-                        Tab::make('Custom Settings')
-                            ->icon('heroicon-o-cog-6-tooth')
-                            ->schema([
-                                Section::make('Tab Information')
-                                    ->icon('heroicon-o-information-circle')
-                                    ->collapsible()
-                                    ->schema([
-                                        \Filament\Forms\Components\Placeholder::make('custom_tab_info')
-                                            ->content('In this tab we add dynamic dot-notation settings without code changes, exposed via Settings API. Fields marked * inside each repeater row: Key (unique) and Group (required, defaults custom) plus Value required; is_encrypted optional for secrets. No auto fields. Dynamic Custom Settings group holds repeater rows with key/group/value/is_encrypted/description and How to use placeholder — access via Setting::get(\'your.key\') or GET /api/v1/settings?group=custom.')
-                                            ->columnSpanFull(),
-                                    ])
-                                    ->columnSpanFull(),
-                                Section::make('Dynamic Custom Settings')
-                                    ->description('No code change needed')
-                                    ->columnSpanFull()
-                                    ->schema([
-                                        Repeater::make('custom_settings')
-                                            ->label('Custom Keys')
-                                            ->helperText('company.hero_title → Setting::get')
-                                            ->columns(2)
-                                            ->schema([
-                                                TextInput::make('key')
-                                                    ->label('Key')
-                                                    ->required()
-                                                    ->placeholder('company.slogan')
-                                                    ->helperText('Unique dot notation')
-                                                    ->columnSpan(1),
-                                                TextInput::make('group')
-                                                    ->label('Group')
-                                                    ->required()
-                                                    ->default('custom')
-                                                    ->placeholder('custom')
-                                                    ->helperText('API group filter'),
-                                                Textarea::make('value')
-                                                    ->label('Value')
-                                                    ->required()
-                                                    ->placeholder('Value')
-                                                    ->columnSpanFull(),
-                                                Toggle::make('is_encrypted')
-                                                    ->label('Encrypted')
-                                                    ->helperText('For secrets')
-                                                    ->inline(false),
-                                                TextInput::make('description')
-                                                    ->label('Description')
-                                                    ->placeholder('Purpose')
-                                                    ->columnSpanFull(),
-                                            ])
-                                            ->addActionLabel('Add Custom Setting')
-                                            ->collapsible()
-                                            ->itemLabel(fn (array $state): ?string => $state['key'] ?? 'New Setting')
-                                            ->columnSpanFull(),
-                                        \Filament\Forms\Components\Placeholder::make('how_to_use')
-                                            ->label('How to use')
-                                            ->content(new \Illuminate\Support\HtmlString('<div class="text-sm space-y-1"><p><strong>Backend:</strong> <code>Setting::get(\'your.key\')</code></p><p><strong>Frontend:</strong> <code>GET /api/v1/settings?group=custom</code></p><p><strong>Tip:</strong> Use company/tokens/seo/custom groups.</p></div>'))
-                                            ->columnSpanFull(),
-                                    ]),
-                            ]),
                     ])            ])
             ->columns(1);
     }
@@ -588,25 +518,7 @@ class ManageCompanySettings extends Page implements HasForms
             }
         }
 
-        $knownKeys = array_column($map, 'key');
-        $submittedKeys = [];
-        if (!empty($data['custom_settings']) && is_array($data['custom_settings'])) {
-            foreach ($data['custom_settings'] as $row) {
-                if (empty($row['key'])) continue;
-                $key = trim($row['key']);
-                $group = $row['group'] ?? (str_contains($key, '.') ? explode('.', $key)[0] : 'custom');
-                $value = $row['value'] ?? '';
-                $enc = (bool) ($row['is_encrypted'] ?? false);
-                $desc = $row['description'] ?? 'Custom setting';
-                \App\Models\Setting::set($key, $value, $group, $enc, $desc);
-                $submittedKeys[] = $key;
-            }
-        }
-        if (isset($data['custom_settings'])) {
-            \App\Models\Setting::where('group','custom')->whereNotIn('key', $submittedKeys)->delete();
-        }
-
-        foreach (['all','company','seo','general','custom','tokens','reports','mail'] as $g) {
+        foreach (['all','company','seo','general','tokens','reports','mail'] as $g) {
             \Illuminate\Support\Facades\Cache::forget('settings:'.$g);
             \Illuminate\Support\Facades\Cache::forget('settings:'.$g.'+seo');
         }
@@ -617,7 +529,6 @@ class ManageCompanySettings extends Page implements HasForms
         \Illuminate\Support\Facades\Cache::forget('navigation');
         \Illuminate\Support\Facades\Cache::forget('homepage:aggregate');
         \Illuminate\Support\Facades\Cache::forget('site:stats');
-        \Illuminate\Support\Facades\Cache::forget('settings:custom');
 
         Notification::make()
             ->title('Company settings saved')

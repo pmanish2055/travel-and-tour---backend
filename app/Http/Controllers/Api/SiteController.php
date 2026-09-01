@@ -31,7 +31,7 @@ class SiteController extends Controller
      */
     public function settings(Request $request): JsonResponse
     {
-        $request->validate(['group' => 'nullable|string|in:company,seo,general,custom']);
+        $request->validate(['group' => 'nullable|string|in:company,seo,general']);
         $group = $request->input('group');
         $cacheKey = 'settings:'.($group ?? 'all');
         $settings = Cache::remember($cacheKey, 3600, function () use ($group) {

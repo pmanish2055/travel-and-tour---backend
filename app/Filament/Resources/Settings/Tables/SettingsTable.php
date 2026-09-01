@@ -22,9 +22,9 @@ class SettingsTable
                         'company' => 'primary',
                         'seo' => 'success',
                         'tokens' => 'danger',
-                        'custom' => 'info',
                         'reports' => 'warning',
                         'mail' => 'gray',
+                        'general' => 'info',
                         default => 'gray',
                     })
                     ->searchable()
@@ -59,7 +59,6 @@ class SettingsTable
                         'company' => 'company',
                         'seo' => 'seo',
                         'tokens' => 'tokens',
-                        'custom' => 'custom',
                         'reports' => 'reports',
                         'mail' => 'mail',
                         'general' => 'general',

@@ -45,12 +45,11 @@ class SettingForm
                                                 'tokens' => 'tokens',
                                                 'reports' => 'reports',
                                                 'mail' => 'mail',
-                                                'custom' => 'custom',
                                                 'general' => 'general',
                                             ])
                                             ->searchable()
                                             ->required()
-                                            ->default('custom')
+                                            ->default('general')
                                             ->helperText('API group filter'),
                                         TextInput::make('key')
                                             ->label('Key')
