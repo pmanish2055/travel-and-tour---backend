@@ -126,16 +126,21 @@ class ManageCompanySettings extends Page implements HasForms
                                     ->schema([
                                         TextInput::make('company_name')
                                             ->label('Company Legal Name')
-                                            ->required()
-                                            ->helperText('Shown in footer, invoices'),
+                                            ->placeholder('Your Company Pvt. Ltd.')
+                                            ->helperText('Shown in footer, invoices')
+                                            ->nullable()
+                                            ->maxLength(255),
                                         TextInput::make('company_tagline')
                                             ->label('Tagline')
                                             ->placeholder('Discover Your Next Journey')
-                                            ->helperText('Short tagline for SEO'),
+                                            ->helperText('Short tagline for SEO')
+                                            ->nullable()
+                                            ->maxLength(255),
                                         Textarea::make('company_description')
                                             ->label('Company Description')
                                             ->rows(3)
                                             ->helperText('About text for SEO')
+                                            ->nullable()
                                             ->columnSpanFull(),
                                     ]),
                                 Section::make('Business Hours')
@@ -169,8 +174,8 @@ class ManageCompanySettings extends Page implements HasForms
                                         TextInput::make('company_email')
                                             ->label('Company Email')
                                             ->email()
-                                            ->required()
-                                            ->helperText('Inquiry notifications'),
+                                            ->rules(['nullable', 'email'])
+                                            ->helperText('Inquiry notifications (optional)'),
                                         TextInput::make('company_phone')
                                             ->label('Phone')
                                             ->tel()
@@ -301,21 +306,26 @@ class ManageCompanySettings extends Page implements HasForms
                                     ->schema([
                                         TextInput::make('company_facebook')
                                             ->label('Facebook URL')
-                                            ->url()
-                                            ->placeholder('https://facebook.com/yourcompany'),
+                                            ->placeholder('https://facebook.com/yourcompany')
+                                            ->rules(['nullable', 'url'])
+                                            ->maxLength(500),
                                         TextInput::make('company_instagram')
                                             ->label('Instagram URL')
-                                            ->url()
-                                            ->placeholder('https://instagram.com/yourcompany'),
+                                            ->placeholder('https://instagram.com/yourcompany')
+                                            ->rules(['nullable', 'url'])
+                                            ->maxLength(500),
                                         TextInput::make('company_youtube')
                                             ->label('YouTube URL')
-                                            ->url(),
+                                            ->rules(['nullable', 'url'])
+                                            ->maxLength(500),
                                         TextInput::make('company_linkedin')
                                             ->label('LinkedIn URL')
-                                            ->url(),
+                                            ->rules(['nullable', 'url'])
+                                            ->maxLength(500),
                                         TextInput::make('company_tiktok')
                                             ->label('TikTok URL')
-                                            ->url()
+                                            ->rules(['nullable', 'url'])
+                                            ->maxLength(500)
                                             ->columnSpanFull(),
                                     ]),
                             ]),
