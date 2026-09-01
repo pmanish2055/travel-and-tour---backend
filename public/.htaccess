@@ -5,6 +5,9 @@
 
     RewriteEngine On
 
+    # Cloudflare / HTTPS Protocol Fix (403 Control)
+    SetEnvIf X-Forwarded-Proto https HTTPS=on
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

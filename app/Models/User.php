@@ -17,13 +17,14 @@ use Spatie\Permission\Traits\HasRoles; // Trait: Enables Shield RBAC - assign ro
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
+use Filament\Models\Contracts\FilamentUser;
 
 /**
  * Class User
  * Represents a user in the system.
  * Attributes: name, email, password, phone, avatar, role, is_active
  */
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles, HasApiTokens;
