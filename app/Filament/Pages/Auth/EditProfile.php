@@ -33,13 +33,14 @@ class EditProfile extends BaseEditProfile
                         FileUpload::make('avatar')
                             ->label('Avatar')
                             ->image()
-                            ->avatar()
                             ->directory('avatars')->disk('public')->visibility('public')
+                            ->helperText('Upload your profile picture (200x200 PNG/JPG, max 5MB)')
+                            ->columnSpanFull()
                             ->maxSize(5120)
                             ->acceptedFileTypes(['image/jpeg','image/jpg','image/png','image/webp'])
-                            ->imagePreviewHeight('150')
-                            ->columnSpanFull()
-                            ->helperText('Upload your profile picture (max 5MB, square recommended)'),
+                            ->imagePreviewHeight('250')
+                            ->openable()
+                            ->downloadable(),
 
                         TextInput::make('name')
                             ->label('Full Name')
